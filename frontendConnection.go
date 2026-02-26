@@ -176,58 +176,57 @@ func (c *FrontendConnection) auth(dbcfg VirtualDatabaseConfiguration, sm *fbprot
 	case "trust":
 		return true
 	case "md5":
-		// handled below
+		salt := make([]byte, 4)
+		_, err := rand.Read(salt)
+		if err != nil {
+			elog.Errorf("could not generate random salt: %s", err)
+			return authFailed("XX000", "internal error")
+		}
+
+		var msg fbcore.Message
+		buf := &bytes.Buffer{}
+		fbbuf.WriteInt32(buf, 5)
+		buf.Write(salt)
+		msg.InitFromBytes(fbproto.MsgAuthenticationMD5PasswordR, buf.Bytes())
+		err = c.WriteAndFlush(&msg)
+		if err != nil {
+			elog.Logf("error during startup sequence: %s", err)
+			return false
+		}
+		err = c.stream.Next(&msg)
+		if err == io.EOF {
+			elog.Debugf("EOF during startup sequence")
+			return false
+		} else if err != nil {
+			elog.Logf("error during startup sequence: %s", err)
+			return false
+		}
+		if msg.MsgType() != fbproto.MsgPasswordMessageP {
+			return authFailed("08P01", "unexpected response %x", msg.MsgType())
+		}
+		// don't bother with messages which are clearly too big
+		if msg.Size() > 100 {
+			return authFailed("28001", "password authentication failed for user %q", username)
+		}
+		password, err := msg.Force()
+		if err != nil {
+			elog.Logf("error during startup sequence: %s", err)
+			return false
+		}
+		success, err := dbcfg.MD5Auth(dbname, username, salt, password)
+		if err != nil {
+			elog.Logf("error during startup sequence: %s", err)
+			return false
+		}
+		if !success {
+			return authFailed("28001", "password authentication failed for user %q", username)
+		}
+		return true
 	default:
 		elog.Errorf("unrecognized authentication method %q", authMethod)
 		return authFailed("XX000", "internal error")
 	}
 
-	salt := make([]byte, 4)
-	_, err := rand.Read(salt)
-	if err != nil {
-		elog.Errorf("could not generate random salt: %s", err)
-		return authFailed("XX000", "internal error")
-	}
-
-	var msg fbcore.Message
-	buf := &bytes.Buffer{}
-	fbbuf.WriteInt32(buf, 5)
-	buf.Write(salt)
-	msg.InitFromBytes(fbproto.MsgAuthenticationMD5PasswordR, buf.Bytes())
-	err = c.WriteAndFlush(&msg)
-	if err != nil {
-		elog.Logf("error during startup sequence: %s", err)
-		return false
-	}
-	err = c.stream.Next(&msg)
-	if err == io.EOF {
-		elog.Debugf("EOF during startup sequence")
-		return false
-	} else if err != nil {
-		elog.Logf("error during startup sequence: %s", err)
-		return false
-	}
-	if msg.MsgType() != fbproto.MsgPasswordMessageP {
-		return authFailed("08P01", "unexpected response %x", msg.MsgType())
-	}
-	// don't bother with messages which are clearly too big
-	if msg.Size() > 100 {
-		return authFailed("28001", "password authentication failed for user %q", username)
-	}
-	password, err := msg.Force()
-	if err != nil {
-		elog.Logf("error during startup sequence: %s", err)
-		return false
-	}
-	success, err := dbcfg.MD5Auth(dbname, username, salt, password)
-	if err != nil {
-		elog.Logf("error during startup sequence: %s", err)
-		return false
-	}
-	if !success {
-		return authFailed("28001", "password authentication failed for user %q", username)
-	}
-	return true
 }
 
 func (c *FrontendConnection) startup(startupParameters map[string]string, dbcfg VirtualDatabaseConfiguration) bool {
@@ -337,7 +336,6 @@ func (c *FrontendConnection) Listen(channel string) error {
 	if err != nil && err != notifydispatcher.ErrChannelAlreadyActive {
 		return err
 	}
-	MetricListensExecuted.Inc()
 	return nil
 }
 
@@ -348,7 +346,6 @@ func (c *FrontendConnection) Unlisten(channel string) error {
 	if err != nil && err != notifydispatcher.ErrChannelNotActive {
 		return err
 	}
-	MetricUnlistensExecuted.Inc()
 	return nil
 }
 
@@ -636,9 +633,6 @@ func (c *FrontendConnection) setSessionError(err error) {
 }
 
 func (c *FrontendConnection) mainLoop(startupParameters map[string]string, dbcfg VirtualDatabaseConfiguration) {
-	MetricClientConnections.Inc()
-	defer MetricClientConnections.Dec()
-
 	if !c.startup(startupParameters, dbcfg) {
 		return
 	}
@@ -650,7 +644,6 @@ mainLoop:
 		select {
 		case n := <-c.notify:
 			if len(c.notify) >= cap(c.notify)-1 {
-				MetricSlowClientsTerminated.Inc()
 				c.fatal(errClientCouldNotKeepUp)
 				break mainLoop
 			}
@@ -659,7 +652,6 @@ mainLoop:
 				c.setSessionError(err)
 				break mainLoop
 			}
-			MetricNotificationsDispatched.Inc()
 		case _ = <-c.connStatusNotifier:
 			c.fatal(errLostServerConnection)
 			break mainLoop
@@ -707,7 +699,6 @@ mainLoop:
 		if err != nil {
 			elog.Warningf("could not unlisten: %s\n", err)
 		}
-		MetricUnlistensExecuted.Inc()
 	}
 	c.listenChannels = nil
 }
