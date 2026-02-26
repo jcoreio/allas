@@ -1,4 +1,4 @@
-FROM golang:1.26.0
+FROM golang:1.26.0-alpine3.23 AS build
 
 WORKDIR /usr/src/app
 
@@ -7,6 +7,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./...
+RUN go build -v -o /usr/local/bin/allas ./...
 
-ENTRYPOINT ["app"]
+FROM alpine:3.23
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/local/bin/allas /usr/local/bin/allas
+
+ENTRYPOINT ["allas"]
