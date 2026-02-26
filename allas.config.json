@@ -1,0 +1,19 @@
+{
+  "listen": {
+    "port": 7432,
+    "host": "0.0.0.0"
+  },
+  "connect": "host=db port=5432 sslmode=disable user=postgres",
+  "startup_parameters": {
+    "client_encoding": "UTF8"
+  },
+  "databases": [
+    {
+      "name": "postgres",
+      "auth": {
+        "method": "trust",
+        "user": "postgres"
+      }
+    }
+  ]
+}

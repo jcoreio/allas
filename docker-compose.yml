@@ -1,0 +1,19 @@
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.28.0.0/16"
+services:
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+    command: postgres -c hba_file=/etc/postgresql/pg_hba.conf
+  allas:
+    build: .
+    volumes:
+      - ./allas.config.json:/etc/allas/allas.config.json
+    command: /etc/allas/allas.config.json
