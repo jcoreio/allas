@@ -1,0 +1,42 @@
+{
+  "name": "allas",
+  "version": "0.0.0-development",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tc": "toolchain",
+    "toolchain": "toolchain",
+    "test": "toolchain test",
+    "prepublishOnly": "echo This package is meant to be published by semantic-release from the dist build directory. && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jcoreio/aws-ecr-utils": "^2.7.0",
+    "@jcoreio/toolchain": "^5.10.3",
+    "@jcoreio/toolchain-circle": "^5.10.3",
+    "@jcoreio/toolchain-esnext": "^5.10.3",
+    "@jcoreio/toolchain-semantic-release": "^5.10.3",
+    "@jcoreio/toolchain-typescript": "^5.10.3",
+    "@types/node": "^24",
+    "eslint": "^9.17.0",
+    "globals": "^16.0.0",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.4.2",
+    "typescript": "^5.1.0"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=16"
+  },
+  "packageManager": "pnpm@10.6.5",
+  "dependencies": {
+    "@babel/runtime": "^7.26.0",
+    "@jcoreio/toolchain-aws-ecr-publish": "^5.10.3"
+  },
+  "@jcoreio/toolchain": {
+    "migratedVersion": "5.10.3"
+  }
+}

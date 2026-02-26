@@ -1,0 +1,5 @@
+{
+  "extends": "@jcoreio/toolchain-aws-ecr-publish/tsconfig.json",
+  "include": ["scripts"],
+  "exclude": ["node_modules"]
+}
