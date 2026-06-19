@@ -94,6 +94,6 @@ workflows:
             - npm-release
             - github-release
             - aws-deployments
-          depends_on:
+          requires:
             - build-amd64
             - build-arm64
