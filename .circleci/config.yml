@@ -20,7 +20,7 @@ jobs:
               "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" \
               "registry=https://registry.npmjs.org/"
             corepack enable
-            pnpm i --frozen-lockfile && (cd deploy; pnpm i --frozen-lockfile)
+            pnpm i --frozen-lockfile
       - run:
           name: Prepublish
           command: |
