@@ -7,11 +7,13 @@ module.exports = {
   hasTypeScriptSources: true,
   // esWrapper: true, // outputs ES module wrappers for CJS modules (default: false)
   // sourceMaps: false, // default is true (outputs .map files, also accepts 'inline' or 'both')
-  // scripts: {
-  //   pretest: 'docker compose up -d',
-  //   jsExample: {
-  //     description: 'example of running a JS script',
-  //     run: async (args = []) => console.log('TEST', ...args),
-  //   },
-  // }
+  scripts: {
+    prerelease: {
+      description: 'push manifest to ECR before release',
+      run: async () => {
+        const { ecrDeployer } = await import('./scripts/ecrDeployer.ts')
+        await ecrDeployer.pushManifest()
+      },
+    },
+  },
 }
