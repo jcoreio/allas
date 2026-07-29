@@ -16,8 +16,8 @@ importers:
         version: 5.10.3(@types/node@24.10.14)(semantic-release@25.0.3(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       '@jcoreio/aws-ecr-utils':
-        specifier: 2.8.0-beta.1
-        version: 2.8.0-beta.1(@types/node@24.10.14)
+        specifier: ^2.8.0
+        version: 2.8.0(@types/node@24.10.14)
       '@jcoreio/toolchain':
         specifier: ^5.10.3
         version: 5.10.3
@@ -796,12 +796,8 @@ packages:
     resolution: {integrity: sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==}
     engines: {node: '>=8'}
 
-  '@jcoreio/aws-ecr-utils@2.7.3':
-    resolution: {integrity: sha512-3ttv2iA4xcwVsU6q1HHrib2l/o8MS/9uvcVdd7jWzTjLJ9vreikUH0kbgbCMWj48R0eI8knla0ERW8VY0L7K3Q==}
-    engines: {node: '>=16'}
-
-  '@jcoreio/aws-ecr-utils@2.8.0-beta.1':
-    resolution: {integrity: sha512-dlKyJUtp8tKa6gdCwtxPypkpJ97by4qjvkCq36BGzycgCDCUKwpptC4Dx7DJ5BxEX+iuDQ8NuXXAMlVPRTE5UA==}
+  '@jcoreio/aws-ecr-utils@2.8.0':
+    resolution: {integrity: sha512-F4OAw0xQygYey98NFXAbGZD2o70bz4nvZp0z9JZsDPKYyMcOIv/fLJGWMvpcHR8B/fmAS/4P2WTiRVZWxoyxfg==}
     engines: {node: '>=16'}
 
   '@jcoreio/eslint-plugin-implicit-dependencies@1.2.0':
@@ -4160,21 +4156,7 @@ snapshots:
 
   '@istanbuljs/schema@0.1.3': {}
 
-  '@jcoreio/aws-ecr-utils@2.7.3(@types/node@24.10.14)':
-    dependencies:
-      '@aws-sdk/client-ecr': 3.1072.0
-      '@aws-sdk/client-sts': 3.1072.0
-      '@babel/runtime': 7.28.6
-      base64-js: 1.5.1
-      find-up: 8.0.0
-      inquirer: 8.2.7(@types/node@24.10.14)
-      log4jcore: 4.8.0
-      promisify-child-process: 5.0.1
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - '@types/node'
-
-  '@jcoreio/aws-ecr-utils@2.8.0-beta.1(@types/node@24.10.14)':
+  '@jcoreio/aws-ecr-utils@2.8.0(@types/node@24.10.14)':
     dependencies:
       '@aws-sdk/client-ecr': 3.1072.0
       '@aws-sdk/client-sts': 3.1072.0
@@ -4197,7 +4179,7 @@ snapshots:
 
   '@jcoreio/toolchain-aws-ecr-publish@5.10.3(@types/node@24.10.14)(semantic-release@25.0.3(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
-      '@jcoreio/aws-ecr-utils': 2.7.3(@types/node@24.10.14)
+      '@jcoreio/aws-ecr-utils': 2.8.0(@types/node@24.10.14)
       '@jcoreio/toolchain': 5.10.3
       '@jcoreio/toolchain-typescript': 5.10.3(typescript@5.9.3)
       '@semantic-release/exec': 6.0.3(semantic-release@25.0.3(typescript@5.9.3))
